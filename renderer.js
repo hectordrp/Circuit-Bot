@@ -7,7 +7,7 @@ const config = require('electron').remote.require('./config.json');
 // Create circuit SDK client instance
 const client = new Circuit.Client(config.sandbox.options);
 
-async function stream() {
+async function stream(user) {
   try {
     let conv = await client.getConversationById(config.sandbox.conversation);
     let call = await client.findCall(conv.rtcSessionId);
@@ -24,8 +24,8 @@ async function stream() {
 
     // Check if the already streaming on the screenshare stream
     if (!call.localMediaType.desktop) {
-      let constraints = { audio: false, video: { width: 1920, height: 1080 } };
-      let mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+      let constraints = { audio: false, video: false };
+      // let mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
 
       // For Debugging show on index.html page
       /*
@@ -36,12 +36,28 @@ async function stream() {
 
       // Send stream on Circuit's screenshare stream. Alternatively use setAudioVideoStream
       // for regular video.
-      await client.setScreenshareStream(call.callId, mediaStream);
+      // await client.setScreenshareStream(call.callId, mediaStream);
       //await client.setAudioVideoStream(call.callId, mediaStream);
+        console.log('chivato 3');
     }
   } catch (err) {
     console.error(`${err.name}: ${err.message}`);
   }
+
+  client.addEventListener('itemAdded', function (itemAdded) {
+    let convId = itemAdded.item.convId;
+    let creatorId = itemAdded.item.creatorId;
+    let itemId = itemAdded.item.itemId;
+    let content = itemAdded.item.text.content;
+
+      if (creatorId !== user.userId) {
+        console.log('no igual', user.emailAddress);
+        client.addTextItem(convId, content)
+            .then(console.log('text send'));
+    }
+  });
+
+
 }
 
 // Helper sleep function
@@ -54,10 +70,11 @@ function sleep(ms) {
   try {
     // Logon
     const user = await client.logon();
-    console.log(`Logged on as bot: ${user.emailAddress}`);
+      console.log(`Logged on as bot: ${user.emailAddress}`);
+      console.log(`bot data: ${JSON.stringify(user)}`);
 
     // Start conference if not yet started/joined and start streaming
-    await stream();
+    await stream(user);
 
     // Ensure call is always up and stream is sent. E.g. bot could have been dropped
     setInterval(async () => await stream(), 10 * 1000);
