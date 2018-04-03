@@ -19,7 +19,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "circuit-sdk": "^1.2.1900",
-    "electron": "^1.8.1"
+    "electron": "^1.8.1",
+    "request": "^2.85.0"
   },
   "devDependencies": {
     "electron": "^1.7.6"
