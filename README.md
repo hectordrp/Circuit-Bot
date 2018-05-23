@@ -2,7 +2,7 @@
 
 Bot basado en [Electron](https://electron.atom.io/)
 
-Ha sido diseñado para ayudar en labores de gestin al equipo de ES_MAD_Correos_DI 
+Ha sido diseñado para ayudar en labores de gestión al equipo de ES_MAD_Correos_DI 
 
 Por ahora tiene las siguientes Features:
 * Puede comenzar conferencias, invitando a los participantes que se le indiquen.
