@@ -27,6 +27,8 @@ en vez de utilizar un comando literal como
 
 ### Detalles
 
+La lógica de la app se encuentra en el archivo renderer.js.
+
 > La configuracion del Bot es privada (Tokens de DialogFlow y CircuitSdk), pero si quieres probarlo en tu propia máquina necesitarás lo siguiente:
 
 * Credenciales OAuth (credenciales del Bot)
