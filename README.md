@@ -1,12 +1,14 @@
 # BotCorreosDI
 
 Bot basado en [Electron](https://electron.atom.io/).
+
 Ha sido diseñado para ayudar en labores de gestión al equipo de ES_MAD_Correos_DI 
+
 
 Por ahora tiene las siguientes Features:
 * Puede comenzar conferencias, invitando a los participantes que se le indiquen.
 * Utiliza el Api [setScreenshareStream](https://circuitsandbox.net/sdk/classes/Client.html#method_setScreenshareStream) para hacer cast de video desde una webCam a una conferencia. (Posible uso en Dailys).
-*El bot está preparado para impedir que la llamada se caiga.
+* El bot está preparado para impedir que la llamada se caiga.
 * Utiliza el Api de IA de Google [DialogFlow](https://dialogflow.com/), con esta Api puede responder de manera inteligente a las indicaciones que se le hagan, esto hace que el bot sea más "user Friendly". 
 ```
 Por ejemplo podria pedirle lo siguiente: 
