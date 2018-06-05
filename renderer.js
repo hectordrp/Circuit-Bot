@@ -73,11 +73,11 @@ function sleep(ms) {
         console.log('Mencion ->', mention);
     });
     client.addEventListener('itemAdded', function (itemAdded) {
-        console.log(itemAdded.item.text.mentionedUsers.length);
+        // console.log(itemAdded.item.text.mentionedUsers.length);
 
-        for (let i = 0; i< itemAdded.item.text.mentionedUsers.length; i++) {
-            console.log('index: ', i);
-        }
+        // for (let i = 0; i< itemAdded.item.text.mentionedUsers.length; i++) {
+        //     console.log('index: ', i);
+        // }
         console.log('Texto detectado');
         let dibotId = '5b345359-0bc6-49fd-893a-3e7e7da77208';
         let convId = itemAdded.item.convId;
@@ -86,16 +86,28 @@ function sleep(ms) {
         let parentId = itemAdded.item.parentItemId;
         let content = itemAdded.item.text.content;
 
-        if (creatorId !== user.userId) {
-            console.log('dentro');
 
+        if (creatorId !== user.userId) {
+            if (manageCommands(content)) {
+                console.log('ok');
+            }
+            else {
+                smallTalk();
+            }
+        }
+
+
+
+
+        function manageCommands(content) {
             if (content === '/daily') {
                 console.log('llamando');
                 // Start conference if not yet started/joined and start streaming
                 stream(user);
 
-                // Ensure call is always up and stream is sent.
+                // Ensure call is always up and stream is sent:
                 //setInterval(async () => await stream(), 10 * 1000);
+                return true;
 
             }
             else if (content === '/exit') {
@@ -107,6 +119,7 @@ function sleep(ms) {
                         console.log(call);
                         client.leaveConference(call.callId);
                     });
+                return true;
             }
             else if (content === '/video') {
                 console.log('Video llamada');
@@ -115,51 +128,50 @@ function sleep(ms) {
 
                 // Ensure call is always up and stream is sent.
                 //setInterval(async () => await stream(), 10 * 1000);
-            }
-            else {
-                console.log('Mandando a Api');
-                let options = {
-                    // url: 'https://api.dialogflow.com/v1/query',
-                    url: 'https://api.dialogflow.com/v1/query?v=20170712&query=' + content + '&lang=es&sessionId=eeb47626-8603-41e4-abee-ca59ed842bec&timezone=Atlantic/Canary',
-                    headers: {
-                        "Authorization": "Bearer " + accessToken
-                    }
-                    // body: JSON.stringify({query: content, lang: "es", sessionId: "eeb47626-8603-41e4-abee-ca59ed842be"})
-                };
-
-                function callback(error, response, body) {
-                    console.log('callback', response);
-                    if (!error && response.statusCode === 200) {
-                        let info = JSON.parse(body);
-                        console.log("body: ", info);
-
-
-                        let responseMessage = {
-                            parentId: selectId(),
-                            content: info.result.fulfillment.speech
-                        };
-                        if (responseMessage && responseMessage.content !== "") {
-                            client.addTextItem(convId, responseMessage)
-                                .then(console.log('text send -> ', responseMessage));
-                        }
-                    }
-                }
-
-                function selectId () {
-                    if (parentId) {
-                        return parentId;
-                        console.log('parent');
-                    } else {
-                        return itemId;
-                        console.log('item');
-
-                    }
-                }
-                console.log('request');
-                request(options, callback);
-
+                return true;
             }
         }
+
+        function selectId () {
+            if (parentId) {
+                return parentId;
+            } else {
+                return itemId;
+            }
+        }
+
+        function smallTalk() {
+            console.log('Mandando a Api');
+            let options = {
+                url: 'https://api.dialogflow.com/v1/query?v=20170712&query=' + content + '&lang=es&sessionId=eeb47626-8603-41e4-abee-ca59ed842bec&timezone=Atlantic/Canary',
+                headers: {
+                    "Authorization": "Bearer " + accessToken
+                }
+            };
+
+            console.log('request');
+            request(options, DialogFlowCallback);
+        }
+
+        function DialogFlowCallback(error, response, body) {
+            console.log('callback', response);
+            if (!error && response.statusCode === 200) {
+                let info = JSON.parse(body);
+                console.log("body: ", info);
+
+
+                let responseMessage = {
+                    parentId: selectId(),
+                    content: info.result.fulfillment.speech
+                };
+                if (responseMessage && responseMessage.content !== "") {
+                    client.addTextItem(convId, responseMessage)
+                        .then(console.log('text send -> ', responseMessage));
+                }
+            }
+        }
+
+
     });
 })();
 
