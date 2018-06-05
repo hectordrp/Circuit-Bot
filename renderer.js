@@ -66,8 +66,20 @@ function sleep(ms) {
     console.log(`Logged on as bot: ${user.emailAddress}`);
     console.log(`bot data: ${JSON.stringify(user)}`);
 
+    client.addEventListener('itemUpdated', function (itemUpdated) {
+        console.log('Item Actualizado ->', itemUpdated);
+    });
+    client.addEventListener('mention', function (mention) {
+        console.log('Mencion ->', mention);
+    });
     client.addEventListener('itemAdded', function (itemAdded) {
-        console.log('salta evento');
+        console.log(itemAdded.item.text.mentionedUsers.length);
+
+        for (let i = 0; i< itemAdded.item.text.mentionedUsers.length; i++) {
+            console.log('index: ', i);
+        }
+        console.log('Texto detectado');
+        let dibotId = '5b345359-0bc6-49fd-893a-3e7e7da77208';
         let convId = itemAdded.item.convId;
         let creatorId = itemAdded.item.creatorId;
         let itemId = itemAdded.item.itemId;
@@ -126,8 +138,10 @@ function sleep(ms) {
                             parentId: selectId(),
                             content: info.result.fulfillment.speech
                         };
-                        client.addTextItem(convId, responseMessage)
-                            .then(console.log('text send'));
+                        if (responseMessage && responseMessage.content !== "") {
+                            client.addTextItem(convId, responseMessage)
+                                .then(console.log('text send -> ', responseMessage));
+                        }
                     }
                 }
 
