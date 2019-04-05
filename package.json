@@ -18,11 +18,9 @@
   "author": "Roger Urscheler <roger.urscheler@unify.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "circuit-sdk": "^1.2.1900",
+    "circuit-sdk": "^1.2.3503",
     "request": "^2.85.0",
-    "electron": "^2.0.3"
+    "electron": "^2.0.4"
   },
-  "devDependencies": {
-    "electron": "^1.8.7"
-  }
+  "devDependencies": {}
 }

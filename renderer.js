@@ -1,4 +1,7 @@
 var request = require('request');
+// Specify the file circuit.js which is the browser SDK to get access to WebRTC APIs.
+const Circuit = require('circuit-sdk/circuit.js');
+
 const config = require('electron').remote.require('./config.json');
 
 
@@ -65,6 +68,7 @@ function sleep(ms) {
 // Bot features
 (async () => {
     // Logon
+    console.log("logeando");
     const user = await client.logon();
     console.log(`Logged on as bot: ${user.emailAddress}`);
     //console.log(`bot data: ${JSON.stringify(user)}`);
@@ -76,6 +80,22 @@ function sleep(ms) {
     //Item Updated Event
     client.addEventListener('itemUpdated', function (itemUpdated) {
         console.log('Item Actualizado ->', itemUpdated);
+
+        //text example:
+        //  "a<hr/>leluya"
+
+        let itemConfig = {
+            dibotId: '5b345359-0bc6-49fd-893a-3e7e7da77208',
+            convId: itemUpdated.item.convId,
+            creatorId: itemUpdated.item.creatorId,
+            itemId: itemUpdated.item.itemId,
+            parentId: itemUpdated.item.parentItemId,
+            content: itemUpdated.item.text.content
+        };
+
+
+        let regex = itemUpdated.item.text.content.replace(/[<hr\/>, <hr>]/g, '');
+        console.log(regex);
     });
 
     // Mention Event
@@ -187,6 +207,22 @@ function sleep(ms) {
             if (responseMessage && responseMessage.content !== "") {
                 client.addTextItem(this.convId, responseMessage)
                     .then(console.log('Respuesta DialogFlow -> ', responseMessage));
+            }
+
+            if (info.result.metadata.intentName == "videoconference") {
+                console.log('[Video] -> Iniciando Video-Conferencia');
+                videoStream(user);
+            }
+
+            if (info.result.metadata.intentName == "closevideo") {
+                console.log('[Exit] -> Desconectando conferencia');
+
+                let conv = client.getConversationById(config.sandbox.conversation);
+                client.findCall(conv.rtcSessionId)
+                    .then((call = call) => {
+                        console.log(call);
+                        client.leaveConference(call.callId);
+                    });
             }
         }
     }
