@@ -62,3 +62,4 @@ typings/
 # Configuration file
 config.json
 /.idea
+.idea
