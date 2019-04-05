@@ -94,8 +94,16 @@ function sleep(ms) {
         };
 
 
-        let regex = itemUpdated.item.text.content.replace(/[<hr\/>, <hr>]/g, '');
+        let regex = itemUpdated.item.text.content.replace(/.*<hr>/g, '');
         console.log(regex);
+        if (itemConfig.creatorId !== user.userId) {
+            if (manageCommands(itemConfig.content)) {
+                //console.log('ok');
+            }
+            else {
+                smallTalk(itemConfig);
+            }
+        }
     });
 
     // Mention Event
